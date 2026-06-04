@@ -1,0 +1,49 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum MessageSender {
+  user
+  ai
+}
+
+enum MessageStatus {
+  completed
+  failed
+}
+
+enum Channel {
+  web
+  whatsapp
+  instagram
+  facebook
+}
+
+model Conversation {
+  id        String    @id @default(uuid())
+  channel   Channel   @default(web)
+  metadata  Json?
+  messages  Message[]
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  @@map("conversations")
+}
+
+model Message {
+  id             String        @id @default(uuid())
+  conversationId String        @map("conversation_id")
+  conversation   Conversation  @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender         MessageSender
+  text           String
+  status         MessageStatus  @default(completed)
+  createdAt      DateTime      @default(now()) @map("created_at")
+
+  @@index([conversationId, createdAt])
+  @@map("messages")
+}

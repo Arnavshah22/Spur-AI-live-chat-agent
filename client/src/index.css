@@ -1,0 +1,153 @@
+@import url('https://rsms.me/inter/inter.css');
+@import "tailwindcss";
+
+@supports (font-variation-settings: normal) {
+  html { font-family: 'Inter var', sans-serif; }
+}
+
+@theme {
+  --font-sans: 'Inter var', 'Inter', system-ui, -apple-system, sans-serif;
+
+  /* Premium Color System */
+  --color-bg: #0B1020;
+  --color-surface: #111827;
+  --color-surface-raised: #161D2F;
+  --color-border: #1E293B;
+  --color-border-hover: #334155;
+
+  --color-agent-bubble: #161D2F;
+  --color-agent-bubble-border: #1E293B;
+  --color-user-bubble: #635BFF;
+  --color-user-bubble-hover: #5B52E8;
+
+  --color-text-primary: #F9FAFB;
+  --color-text-secondary: #94A3B8;
+  --color-text-tertiary: #475569;
+  --color-text-timestamp: #64748B;
+
+  --color-success: #22C55E;
+  --color-error: #EF4444;
+  --color-warning: #F59E0B;
+
+  --shadow-bubble: 0 1px 2px rgba(0, 0, 0, 0.08);
+  --shadow-header: 0 1px 0 rgba(30, 41, 59, 0.5);
+  --shadow-actions: 0 2px 8px rgba(0, 0, 0, 0.24);
+  --shadow-focus: 0 0 0 2px rgba(99, 91, 255, 0.15);
+
+  --animate-message-in: messageSlideIn 0.25s ease-out both;
+  --animate-fade-in: fadeIn 0.2s ease-out both;
+  --animate-quick-reply-in: quickReplyIn 0.25s ease-out both;
+}
+
+/* ─── Keyframe Animations ─── */
+
+@keyframes messageSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes quickReplyIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes typingBounce {
+  0%, 60%, 100% {
+    transform: translateY(0);
+    opacity: 0.4;
+  }
+  30% {
+    transform: translateY(-4px);
+    opacity: 1;
+  }
+}
+
+@keyframes pulseOnline {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0);
+  }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* ─── Base Reset ─── */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--color-bg);
+  color: var(--color-text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.5;
+}
+
+/* ─── Scrollbar ─── */
+
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1E293B;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
+
+/* ─── Selection ─── */
+
+::selection {
+  background: rgba(99, 91, 255, 0.2);
+}
+
+/* ─── Focus Visible ─── */
+
+:focus-visible {
+  outline: 2px solid rgba(99, 91, 255, 0.5);
+  outline-offset: 2px;
+}

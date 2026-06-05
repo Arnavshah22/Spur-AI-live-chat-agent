@@ -110,20 +110,24 @@ VITE_API_BASE_URL=http://localhost:3001/api/chat  # Backend API URL
 
 #### 5. Apply database migrations
 
+Run the following command to create the database tables:
+
 ```bash
 cd server
 npm run db:deploy
 ```
 
-This will create the necessary database tables (`conversations` and `messages`).
+This applies all pending migrations to your database and creates the `conversations` and `messages` tables.
+
+**When to use which command:**
+
+- **`npm run db:deploy`** - Use this for **first-time setup** and **production deployments**. It applies migrations without generating new migration files. ✅ Use this command.
+
+- **`npm run db:migrate`** - Only use this during **development when you modify the schema**. It generates a new migration file based on your schema changes. You typically won't need this command unless you're actively developing the database schema.
+
+For this initial setup, **use `npm run db:deploy`**.
 
 *(Note: No database seed step is required for this project, as the AI's core knowledge base (return policy, shipping, etc.) is injected directly via the system prompt rather than being stored in the database.)*
-
-For local development with schema changes, use:
-
-```bash
-npm run db:migrate
-```
 
 #### 6. Start the application
 

@@ -1,0 +1,30 @@
+services:
+  - type: web
+    name: spur-chat-api
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: cd server && npm install && npm run build && npm run db:deploy
+    startCommand: cd server && npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: OPENAI_BASE_URL
+        value: https://api.groq.com/openai/v1
+      - key: OPENAI_MODEL
+        value: llama-3.3-70b-versatile
+      - key: MAX_MESSAGE_LENGTH
+        value: 2000
+      - key: MAX_HISTORY_MESSAGES
+        value: 10
+      - key: MAX_TOKENS
+        value: 500
+      - key: LLM_TIMEOUT_MS
+        value: 30000
+      - key: CORS_ORIGIN
+        sync: false

@@ -16,10 +16,16 @@ export function createApp(
 
   // ── Security & parsing ───────────────────────────────────────────
   app.use(helmet());
+  
+  // Handle CORS with support for wildcards
+  const corsOrigin = env.CORS_ORIGIN === '*' 
+    ? '*' 
+    : env.CORS_ORIGIN.split(',').map(o => o.trim());
+  
   app.use(
     cors({
-      origin: env.CORS_ORIGIN,
-      credentials: true,
+      origin: corsOrigin,
+      credentials: corsOrigin === '*' ? false : true,
     })
   );
   app.use(express.json({ limit: '1mb' }));

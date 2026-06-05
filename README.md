@@ -80,6 +80,10 @@ OPENAI_API_KEY=sk-your_openai_api_key_here
 OPENAI_MODEL=gpt-4o-mini
 ```
 
+**Option 3: Anthropic (Requires Credits + SDK adapter)**
+
+*Note: While the app currently uses the OpenAI SDK, you can easily swap to Anthropic by installing the `@anthropic-ai/sdk` and providing an `ANTHROPIC_API_KEY=sk-ant-your_key_here` in the `.env` file, then swapping out the client initialization in `llm.service.ts`.*
+
 **Optional configuration:**
 
 ```env
@@ -112,6 +116,8 @@ npm run db:deploy
 ```
 
 This will create the necessary database tables (`conversations` and `messages`).
+
+*(Note: No database seed step is required for this project, as the AI's core knowledge base (return policy, shipping, etc.) is injected directly via the system prompt rather than being stored in the database.)*
 
 For local development with schema changes, use:
 

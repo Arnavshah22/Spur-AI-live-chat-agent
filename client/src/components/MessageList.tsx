@@ -133,8 +133,8 @@ export default function MessageList({ messages, isStreaming, onSuggestedClick }:
 
   return (
     <div ref={containerRef} onScroll={handleScroll} className="h-full overflow-y-auto">
-      <div className="max-w-[800px] mx-auto px-6 py-6">
-        <div className="flex flex-col gap-4">
+      <div className="w-full py-8" style={{ paddingLeft: 'max(1.5rem, 5vw)', paddingRight: 'max(1.5rem, 5vw)' }}>
+        <div className="flex flex-col gap-8">
           {renderItems.map((item) => {
             if (item.type === 'separator') {
               return <DaySeparator key={item.key} label={item.label} />;

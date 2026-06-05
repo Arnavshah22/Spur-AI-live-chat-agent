@@ -6,7 +6,7 @@ interface ChatHeaderProps {
 export default function ChatHeader({ onNewChat, isLoadingHistory }: ChatHeaderProps) {
   return (
     <header className="flex-shrink-0 border-b border-[#1E293B] bg-[#111827]/80 backdrop-blur-md">
-      <div className="h-[56px] px-6 flex items-center justify-between max-w-[800px] mx-auto">
+      <div className="h-[64px] flex items-center justify-between w-full" style={{ paddingLeft: 'max(1.5rem, 5vw)', paddingRight: 'max(1.5rem, 5vw)' }}>
         {/* ── Left: Brand Identity ── */}
         <div className="flex items-center gap-3">
           {/* Company Avatar */}
@@ -22,19 +22,19 @@ export default function ChatHeader({ onNewChat, isLoadingHistory }: ChatHeaderPr
           </div>
 
           <div className="flex flex-col">
-            <div className="flex items-center gap-2">
-              <span className="text-[14px] font-semibold text-[#F9FAFB] leading-none">
+            <div className="flex items-center gap-2 mb-0.5">
+              <span className="text-[15px] font-semibold text-[#F9FAFB]">
                 Acme Support
               </span>
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1.5">
                 <div className="w-1.5 h-1.5 rounded-full bg-[#22C55E]" />
-                <span className="text-[11px] text-[#22C55E] font-medium leading-none">
+                <span className="text-[12px] text-[#22C55E] font-medium">
                   Online
                 </span>
               </div>
             </div>
             {!isLoadingHistory && (
-              <span className="text-[11px] text-[#475569] leading-none mt-1">
+              <span className="text-[13px] text-[#94A3B8]">
                 Typically replies in minutes
               </span>
             )}

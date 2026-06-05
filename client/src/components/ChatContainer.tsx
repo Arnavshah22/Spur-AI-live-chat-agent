@@ -33,36 +33,36 @@ export default function ChatContainer() {
     !lastMessage?.isError;
 
   return (
-    <div className="h-full flex flex-col bg-[#0B1020]">
-      {/* ── Header ── */}
-      <ChatHeader
-        onNewChat={startNewConversation}
-        isLoadingHistory={isLoadingHistory}
-      />
-
-      {/* ── Error Banner ── */}
-      {error && <ErrorBanner message={error} onDismiss={clearError} />}
-
-      {/* ── Message Area ── */}
-      <div className="flex-1 overflow-hidden">
-        <MessageList
-          messages={messages}
-          isStreaming={isStreaming}
-          onSuggestedClick={sendMessage}
+    <div className="h-full w-full bg-[#0B1020] flex justify-center">
+      <div className="w-full h-full flex flex-col relative bg-[#0B1020]">
+        {/* ── Header ── */}
+        <ChatHeader
+          onNewChat={startNewConversation}
+          isLoadingHistory={isLoadingHistory}
         />
-      </div>
 
-      {/* ── Quick Replies ── */}
-      {showQuickReplies && (
-        <QuickReplies
-          suggestions={QUICK_SUGGESTIONS}
-          onSelect={sendMessage}
-        />
-      )}
+        {/* ── Error Banner ── */}
+        {error && <ErrorBanner message={error} onDismiss={clearError} />}
 
-      {/* ── Input ── */}
-      <div className="flex-shrink-0">
-        <ChatInput onSend={sendMessage} disabled={isBusy} />
+        {/* ── Message Area ── */}
+        <div className="flex-1 overflow-hidden">
+          <MessageList
+            messages={messages}
+            isStreaming={isStreaming}
+            onSuggestedClick={sendMessage}
+          />
+        </div>
+
+        {/* ── Footer (Quick Replies + Input) ── */}
+        <div className="flex-shrink-0 flex flex-col gap-4 pb-4 lg:pb-6">
+          {showQuickReplies && (
+            <QuickReplies
+              suggestions={QUICK_SUGGESTIONS}
+              onSelect={sendMessage}
+            />
+          )}
+          <ChatInput onSend={sendMessage} disabled={isBusy} />
+        </div>
       </div>
     </div>
   );

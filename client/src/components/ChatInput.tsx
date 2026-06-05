@@ -50,13 +50,13 @@ export default function ChatInput({ onSend, disabled }: ChatInputProps) {
   const canSend = text.trim().length > 0 && !disabled;
 
   return (
-    <div className="flex-shrink-0 border-t border-[#1E293B] bg-[#111827]/80 backdrop-blur-md">
-      <div className="max-w-[800px] mx-auto px-6 py-3">
+    <div className="flex-shrink-0" style={{ paddingLeft: 'max(1.5rem, 5vw)', paddingRight: 'max(1.5rem, 5vw)', paddingBottom: '2rem' }}>
+      <div className="w-full">
         <div
           className={`
-            relative flex items-end gap-2 px-3 py-2 rounded-2xl
-            bg-[#161D2F] border transition-all duration-200
-            ${isFocused ? 'border-[#635BFF]/50 shadow-[0_0_0_2px_rgba(99,91,255,0.12)]' : 'border-[#1E293B] hover:border-[#334155]'}
+            relative flex items-center gap-3 px-4 py-3 rounded-2xl
+            bg-[#161D2F] shadow-sm transition-all duration-200
+            ${isFocused ? 'border-[#635BFF]/60 shadow-[0_0_0_1px_rgba(99,91,255,0.4)]' : 'border border-[#1E293B] hover:border-[#334155]'}
           `}
         >
           {/* Attachment Button */}
@@ -81,8 +81,15 @@ export default function ChatInput({ onSend, disabled }: ChatInputProps) {
             disabled={disabled}
             maxLength={MAX_CHARS}
             rows={1}
-            className="flex-1 py-1.5 bg-transparent text-[#F9FAFB] text-[14px] leading-[1.5] placeholder-[#475569] resize-none outline-none disabled:opacity-50"
-            style={{ height: 'auto', minHeight: '24px', maxHeight: '120px' }}
+            className="flex-1 py-1.5 bg-transparent text-[#F9FAFB] text-[14px] leading-[1.5] placeholder-[#475569] resize-none disabled:opacity-50"
+            style={{ 
+              height: 'auto', 
+              minHeight: '24px', 
+              maxHeight: '120px',
+              outline: 'none',
+              border: 'none',
+              boxShadow: 'none'
+            }}
           />
 
           {/* Send Button */}

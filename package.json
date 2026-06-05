@@ -1,0 +1,10 @@
+{
+  "name": "spur-chat-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "keep-alive": "node keep-alive.js",
+    "keep-alive:bg": "node keep-alive.js > keep-alive.log 2>&1 &"
+  },
+  "description": "Keep your Render free tier server alive"
+}

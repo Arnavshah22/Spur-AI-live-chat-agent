@@ -48,8 +48,10 @@ function EmptyState({ onSuggestedClick }: { onSuggestedClick?: (text: string) =>
           <button
             key={suggestion}
             onClick={() => onSuggestedClick?.(suggestion)}
-            className="px-4 py-2 rounded-xl text-[13px] font-medium text-[#94A3B8] bg-[#161D2F] border border-[#1E293B] hover:border-[#334155] hover:text-[#F9FAFB] hover:bg-[#1E293B] transition-all duration-150"
+            className="flex-shrink-0 text-[13px] font-medium text-[#E2E8F0] bg-[#161D2F] border border-[#334155] hover:border-[#475569] hover:bg-[#1E293B] hover:text-[#F8FAFC] transition-all duration-200 shadow-md whitespace-nowrap"
             style={{
+              padding: '8px 16px',
+              borderRadius: '9999px',
               animation: `quickReplyIn 0.3s ease-out ${0.15 + i * 0.05}s both`,
             }}
           >

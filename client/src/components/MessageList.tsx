@@ -90,6 +90,11 @@ function useRenderItems(messages: Message[], isStreaming: boolean) {
       const msg = messages[i]!;
       const prev = i > 0 ? messages[i - 1] : undefined;
 
+      // Skip empty streaming AI messages (typing indicator will show instead)
+      if (msg.sender === 'ai' && msg.isStreaming && msg.text === '') {
+        continue;
+      }
+
       // Insert day separator if needed
       if (shouldShowDaySeparator(prev, msg)) {
         flushGroup();

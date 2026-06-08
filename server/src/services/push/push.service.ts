@@ -6,6 +6,7 @@ import { env } from '../../config/env.js';
 /**
  * Push Notification Service
  * Handles Web Push API notifications for stale conversation follow-ups
+ * Updated: 2026-06-08
  */
 
 // Configure web-push with VAPID keys

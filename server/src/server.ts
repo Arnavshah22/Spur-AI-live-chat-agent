@@ -7,6 +7,7 @@ import { ChatService } from './modules/chat/chat.service.js';
 import { createLLMService } from './services/llm/llm.service.js';
 import { createChatRouter } from './modules/chat/chat.routes.js';
 import { createCacheService, type CacheService } from './services/cache/cache.service.js';
+import pushRouter from './modules/push/push.routes.js';
 
 // ── Prisma ──────────────────────────────────────────────────────────
 const prisma = new PrismaClient({
@@ -48,7 +49,7 @@ const chatService = new ChatService(chatRepository, llmService, {
 const chatRouter = createChatRouter(chatService, {
   maxMessageLength: env.MAX_MESSAGE_LENGTH,
 });
-const app = createApp(chatRouter, async () => {
+const app = createApp(chatRouter, pushRouter, async () => {
   await prisma.$queryRaw`SELECT 1`;
 });
 

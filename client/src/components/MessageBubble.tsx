@@ -20,44 +20,62 @@ export default function MessageBubble({
   const isUser = message.sender === 'user';
   const isError = message.isError;
 
-  // Dynamic border radius — message tails
+  // Dynamic border radius — small, subtle tails (Impeccable style)
   const userRadius = isLastInGroup
-    ? '16px 16px 4px 16px'   // tail on bottom-right for last
-    : '16px 16px 16px 16px';
+    ? '8px 8px 2px 8px'   // tail on bottom-right for last
+    : '8px 8px 8px 8px';
   const agentRadius = isLastInGroup
-    ? '16px 16px 16px 4px'   // tail on bottom-left for last
-    : '16px 16px 16px 16px';
+    ? '8px 8px 8px 2px'   // tail on bottom-left for last
+    : '8px 8px 8px 8px';
+
+  const bubbleTextStyle = {
+    padding: '14px 16px',
+    minHeight: '44px',
+    maxWidth: '100%',
+    overflowWrap: 'break-word' as const,
+    wordBreak: 'break-word' as const,
+    fontSize: '1.02rem',
+    lineHeight: '1.65',
+    fontWeight: 400,
+    boxShadow: 'var(--shadow-bubble)',
+  };
 
   if (isUser) {
     return (
       <div
         className={classNames(
-          'flex justify-end relative',
-          isFirstInGroup ? '' : 'mt-[3px]'
+          'relative flex w-full min-w-0 justify-end',
+          isFirstInGroup ? '' : 'mt-[4px]'
         )}
         style={{ animation: `messageSlideIn 0.25s ease-out ${animationDelay}ms both` }}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        <div className="flex flex-col items-end relative">
+        <div className="relative flex w-full min-w-0 max-w-full flex-col items-end">
           {/* Hover Actions */}
           {isHovered && <MessageActions isUser messageText={message.text} />}
 
           <div
-            className="bg-[#635BFF] text-white text-[14px] leading-[1.6] shadow-[0_1px_2px_rgba(0,0,0,0.08)] transition-colors hover:bg-[#5B52E8] whitespace-pre-wrap"
-            style={{ padding: '8px 12px', borderRadius: userRadius, wordBreak: 'break-word' }}
+            className="w-full min-w-0 whitespace-pre-wrap transition-all duration-150"
+            style={{
+              ...bubbleTextStyle,
+              borderRadius: userRadius,
+              background: 'var(--color-kinpaku-gold)',
+              color: 'var(--color-lacquer-deep)',
+              border: '1px solid var(--color-gold-hairline-strong)',
+            }}
           >
             {message.text}
           </div>
 
           {/* Timestamp + Read Receipt (only on last in group) */}
           {isLastInGroup && (
-            <div className="flex items-center gap-1 mt-1 px-0.5">
-              <time className="text-[11px] text-[#64748B]/70">
+            <div className="flex items-center gap-1 mt-2 px-0.5">
+              <time className="text-[0.72rem] font-medium" style={{ color: 'var(--color-text-faint)', letterSpacing: '0.01em' }}>
                 {formatTime(message.timestamp)}
               </time>
               {/* Read receipt — double check */}
-              <svg className="w-3 h-3 text-[#94A3B8]/50" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+              <svg className="w-3 h-3" style={{ color: 'var(--color-text-faint)' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
               </svg>
             </div>
@@ -71,35 +89,36 @@ export default function MessageBubble({
   return (
     <div
       className={classNames(
-        'flex relative',
-        isFirstInGroup ? '' : 'mt-[3px]'
+        'relative flex w-full min-w-0',
+        isFirstInGroup ? '' : 'mt-[4px]'
       )}
       style={{ animation: `messageSlideIn 0.25s ease-out ${animationDelay}ms both` }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="flex flex-col relative">
+      <div className="relative flex w-full min-w-0 max-w-full flex-col">
         {/* Hover Actions */}
         {isHovered && <MessageActions isUser={false} messageText={message.text} />}
 
         <div
-          className={classNames(
-            'text-[14px] leading-[1.6] shadow-[0_1px_2px_rgba(0,0,0,0.08)] whitespace-pre-wrap',
-            isError
-              ? 'bg-red-500/5 border border-red-500/15 text-red-300'
-              : 'bg-[#161D2F] text-[#F9FAFB] border border-[#1E293B]'
-          )}
-          style={{ padding: '8px 12px', borderRadius: agentRadius, wordBreak: 'break-word' }}
+          className="w-full min-w-0 whitespace-pre-wrap transition-all duration-150"
+          style={{
+            ...bubbleTextStyle,
+            borderRadius: agentRadius,
+            background: isError ? 'oklch(58% 0.15 35 / 0.08)' : 'var(--color-raised-lacquer)',
+            color: isError ? 'var(--color-vermilion-warning)' : 'var(--color-text-warm)',
+            border: isError ? '1px solid oklch(58% 0.15 35 / 0.2)' : '1px solid var(--color-gold-hairline)',
+          }}
         >
           {message.text}
           {message.isStreaming && message.text && (
-            <span className="inline-block w-[2px] h-4 bg-[#94A3B8] ml-1 align-text-bottom animate-pulse" />
+            <span className="inline-block w-[2px] h-4 ml-1 align-text-bottom animate-pulse" style={{ background: 'var(--color-kinpaku-gold)' }} />
           )}
         </div>
 
         {/* Timestamp (only on last in group) */}
         {isLastInGroup && (
-          <time className="text-[11px] text-[#64748B]/70 mt-1 px-0.5">
+          <time className="text-[0.72rem] font-medium mt-2 px-0.5" style={{ color: 'var(--color-text-faint)', letterSpacing: '0.01em' }}>
             {formatTime(message.timestamp)}
           </time>
         )}

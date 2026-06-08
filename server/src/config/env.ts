@@ -17,6 +17,10 @@ const envSchema = z.object({
   CORS_ORIGIN: z.string().default('http://localhost:5173'),
   REDIS_URL: z.string().optional(),
   REDIS_CACHE_TTL: z.coerce.number().int().positive().default(86400), // 24 hours
+  // Push Notification VAPID keys
+  VAPID_PUBLIC_KEY: z.string().optional(),
+  VAPID_PRIVATE_KEY: z.string().optional(),
+  VAPID_SUBJECT: z.string().optional(),
 });
 
 export type EnvConfig = z.infer<typeof envSchema>;

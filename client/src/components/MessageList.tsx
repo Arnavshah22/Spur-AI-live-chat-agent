@@ -21,38 +21,71 @@ const EMPTY_SUGGESTIONS = [
 
 function EmptyState({ onSuggestedClick }: { onSuggestedClick?: (text: string) => void }) {
   return (
-    <div className="h-full flex flex-col items-center justify-center px-6">
+    <div className="chat-gutter flex h-full w-full min-w-0 flex-col items-center justify-center py-8">
       {/* Brand Avatar */}
       <div
-        className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#635BFF] to-[#4F46E5] flex items-center justify-center mb-5 shadow-lg"
-        style={{ animation: 'fadeIn 0.3s ease-out' }}
+        className="flex items-center justify-center mb-5"
+        style={{ 
+          width: '56px',
+          height: '56px',
+          borderRadius: '8px',
+          background: 'var(--color-kinpaku-gold)',
+          boxShadow: 'var(--shadow-bubble)',
+          animation: 'fadeIn 0.3s ease-out' 
+        }}
       >
-        <span className="text-white text-xl font-bold">A</span>
+        <span className="font-bold" style={{ color: 'var(--color-lacquer-deep)', fontSize: '1.25rem' }}>A</span>
       </div>
 
       <h2
-        className="text-[16px] font-semibold text-[#F9FAFB] mb-1.5"
-        style={{ animation: 'fadeIn 0.3s ease-out 0.05s both' }}
+        className="font-semibold mb-1.5"
+        style={{ 
+          fontSize: '1.02rem',
+          color: 'var(--color-champagne)',
+          animation: 'fadeIn 0.3s ease-out 0.05s both' 
+        }}
       >
         Welcome to Acme Support
       </h2>
       <p
-        className="text-[13px] text-[#94A3B8] mb-8 text-center max-w-xs leading-relaxed"
-        style={{ animation: 'fadeIn 0.3s ease-out 0.1s both' }}
+        className="mb-8 max-w-xs text-center sm:max-w-sm"
+        style={{ 
+          fontSize: '0.85rem',
+          lineHeight: '1.65',
+          color: 'var(--color-text-muted)',
+          animation: 'fadeIn 0.3s ease-out 0.1s both' 
+        }}
       >
-        We're here to help. Choose a topic below or type your question.
+        Choose a topic below or type your question.
       </p>
 
-      <div className="flex flex-wrap gap-2 justify-center max-w-md">
+      <div className="flex w-full max-w-md flex-wrap justify-center gap-2 sm:max-w-lg">
         {EMPTY_SUGGESTIONS.map((suggestion, i) => (
           <button
             key={suggestion}
             onClick={() => onSuggestedClick?.(suggestion)}
-            className="flex-shrink-0 text-[13px] font-medium text-[#E2E8F0] bg-[#161D2F] border border-[#334155] hover:border-[#475569] hover:bg-[#1E293B] hover:text-[#F8FAFC] transition-all duration-200 shadow-md whitespace-nowrap"
+            className="max-w-full font-medium text-center transition-all duration-200"
             style={{
-              padding: '8px 16px',
-              borderRadius: '9999px',
+              fontSize: '0.85rem',
+              padding: '10px 18px',
+              minHeight: '44px',
+              borderRadius: '20px',
+              background: 'var(--color-graphite-2)',
+              color: 'var(--color-champagne)',
+              border: '1px solid var(--color-gold-hairline)',
               animation: `quickReplyIn 0.3s ease-out ${0.15 + i * 0.05}s both`,
+              overflowWrap: 'break-word',
+              wordBreak: 'break-word',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = 'var(--color-graphite)';
+              e.currentTarget.style.borderColor = 'var(--color-gold-hairline-strong)';
+              e.currentTarget.style.color = 'var(--color-kinpaku-gold)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'var(--color-graphite-2)';
+              e.currentTarget.style.borderColor = 'var(--color-gold-hairline)';
+              e.currentTarget.style.color = 'var(--color-champagne)';
             }}
           >
             {suggestion}
@@ -134,9 +167,9 @@ export default function MessageList({ messages, isStreaming, onSuggestedClick }:
   }
 
   return (
-    <div ref={containerRef} onScroll={handleScroll} className="h-full overflow-y-auto">
-      <div className="w-full py-8" style={{ paddingLeft: 'max(1.5rem, 5vw)', paddingRight: 'max(1.5rem, 5vw)' }}>
-        <div className="flex flex-col gap-8">
+    <div ref={containerRef} onScroll={handleScroll} className="h-full min-w-0 overflow-x-hidden overflow-y-auto">
+      <div className="chat-gutter w-full min-w-0 py-6">
+        <div className="flex flex-col" style={{ gap: '24px' }}>
           {renderItems.map((item) => {
             if (item.type === 'separator') {
               return <DaySeparator key={item.key} label={item.label} />;

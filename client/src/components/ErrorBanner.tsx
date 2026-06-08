@@ -17,21 +17,43 @@ export default function ErrorBanner({ message, onDismiss }: ErrorBannerProps) {
 
   return (
     <div
-      className="flex-shrink-0 bg-red-500/5 border-b border-red-500/10"
-      style={{ animation: 'fadeIn 0.2s ease-out' }}
+      className="flex-shrink-0"
+      style={{ 
+        background: 'oklch(58% 0.15 35 / 0.08)',
+        borderBottom: '1px solid oklch(58% 0.15 35 / 0.15)',
+        animation: 'fadeIn 0.2s ease-out' 
+      }}
     >
-      <div className="max-w-[800px] mx-auto px-6 py-2.5 flex items-center justify-between">
-        <div className="flex items-center gap-2.5">
-          <div className="w-5 h-5 rounded-full bg-red-500/10 flex items-center justify-center flex-shrink-0">
-            <svg className="w-3 h-3 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+      <div className="chat-gutter flex w-full min-w-0 items-center justify-between gap-2 py-3">
+        <div className="flex min-w-0 flex-1 items-center gap-3">
+          <div 
+            className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
+            style={{ background: 'oklch(58% 0.15 35 / 0.12)' }}
+          >
+            <svg className="w-3 h-3" style={{ color: 'var(--color-vermilion-warning)' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
             </svg>
           </div>
-          <p className="text-[13px] text-red-300/90">{message}</p>
+          <p className="min-w-0" style={{ fontSize: '0.85rem', color: 'var(--color-vermilion-warning)' }}>{message}</p>
         </div>
         <button
           onClick={onDismiss}
-          className="w-6 h-6 rounded-md flex items-center justify-center text-red-400/60 hover:text-red-300 hover:bg-red-500/10 transition-colors"
+          className="rounded-md flex items-center justify-center transition-all duration-150"
+          style={{
+            width: '44px',
+            height: '44px',
+            minWidth: '44px',
+            minHeight: '44px',
+            color: 'oklch(58% 0.15 35 / 0.6)',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.color = 'var(--color-vermilion-warning)';
+            e.currentTarget.style.background = 'oklch(58% 0.15 35 / 0.12)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.color = 'oklch(58% 0.15 35 / 0.6)';
+            e.currentTarget.style.background = 'transparent';
+          }}
           aria-label="Dismiss error"
         >
           <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">

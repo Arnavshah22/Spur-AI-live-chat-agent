@@ -20,7 +20,9 @@ build/
 *.swp
 *.swo
 *~
-
+.cursor/
+.github/skills/
+.impeccable/
 # OS
 .DS_Store
 Thumbs.db

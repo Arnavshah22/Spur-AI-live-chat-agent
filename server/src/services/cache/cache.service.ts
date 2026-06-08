@@ -35,6 +35,8 @@ export class CacheService {
         return delay;
       },
       lazyConnect: true,
+      // Enable TLS for Upstash (rediss:// protocol)
+      tls: config.redisUrl.startsWith('rediss://') ? {} : undefined,
     });
 
     this.client.on('connect', () => {

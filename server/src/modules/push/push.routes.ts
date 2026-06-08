@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { pushController } from './push.controller';
-import { validateBody } from '../../middleware/validateRequest';
-import { pushSubscriptionSchema } from './push.schema';
+import { pushController } from './push.controller.js';
+import { validateBody } from '../../middleware/validateRequest.js';
+import { pushSubscriptionSchema } from './push.schema.js';
 
 const router = Router();
 

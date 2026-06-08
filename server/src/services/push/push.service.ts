@@ -1,7 +1,7 @@
 import webpush from 'web-push';
-import { prisma } from '../../config/database';
-import { logger } from '../../config/logger';
-import { env } from '../../config/env';
+import { prisma } from '../../config/database.js';
+import { logger } from '../../config/logger.js';
+import { env } from '../../config/env.js';
 
 /**
  * Push Notification Service
@@ -90,7 +90,7 @@ export class PushNotificationService {
       const notificationPayload = JSON.stringify(payload);
 
       const results = await Promise.allSettled(
-        subscriptions.map(async (sub) => {
+        subscriptions.map(async (sub: { id: string; endpoint: string; p256dh: string; auth: string }) => {
           try {
             await webpush.sendNotification(
               {
@@ -126,8 +126,8 @@ export class PushNotificationService {
         })
       );
 
-      const successCount = results.filter((r) => r.status === 'fulfilled').length;
-      const failureCount = results.filter((r) => r.status === 'rejected').length;
+      const successCount = results.filter((r: PromiseSettledResult<void>) => r.status === 'fulfilled').length;
+      const failureCount = results.filter((r: PromiseSettledResult<void>) => r.status === 'rejected').length;
 
       logger.info(
         { conversationId, successCount, failureCount },

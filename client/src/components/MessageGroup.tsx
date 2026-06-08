@@ -10,21 +10,30 @@ export default function MessageGroup({ sender, messages }: MessageGroupProps) {
   const isUser = sender === 'user';
 
   return (
-    <div className={`flex ${isUser ? 'justify-end' : 'justify-start'} gap-3`}>
-      {/* Agent Avatar Column (only for agent messages) */}
+    <div className={`flex w-full min-w-0 ${isUser ? 'justify-end' : 'justify-start'} gap-2`}>
       {!isUser && (
-        <div className="flex-shrink-0 mt-6">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#635BFF] to-[#4F46E5] flex items-center justify-center shadow-sm">
-            <span className="text-white text-[11px] font-bold">A</span>
+        <div className="mt-6 flex-shrink-0">
+          <div
+            className="flex items-center justify-center shadow-sm"
+            style={{
+              width: '32px',
+              height: '32px',
+              borderRadius: '6px',
+              background: 'var(--color-kinpaku-gold)',
+            }}
+          >
+            <span className="font-bold" style={{ color: 'var(--color-lacquer-deep)', fontSize: '0.7rem' }}>A</span>
           </div>
         </div>
       )}
 
-      {/* Messages Column */}
-      <div className={`flex flex-col ${isUser ? 'items-end' : 'items-start'} min-w-0 max-w-[85%] md:max-w-[75%] lg:max-w-[75%]`}>
-        {/* Sender name (only for agent, first message) */}
+      <div
+        className={`chat-message-column ${
+          isUser ? 'chat-message-column--user' : 'chat-message-column--agent'
+        }`}
+      >
         {!isUser && (
-          <span className="text-[12px] font-medium text-[#94A3B8] mb-1 px-0.5">
+          <span className="mb-1 px-0.5 font-medium" style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>
             Acme Support
           </span>
         )}

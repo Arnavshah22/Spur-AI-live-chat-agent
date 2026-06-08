@@ -20,18 +20,39 @@ export default function MessageActions({ isUser, messageText }: MessageActionsPr
 
   return (
     <div
-      className={`absolute -top-8 ${isUser ? 'right-0' : 'left-0'} flex items-center gap-0.5 px-1 py-0.5 rounded-lg bg-[#1E293B] border border-[#334155]/50 shadow-[0_2px_8px_rgba(0,0,0,0.24)] z-10`}
-      style={{ animation: 'fadeIn 0.12s ease-out' }}
+      className={`absolute -top-9 ${isUser ? 'right-0' : 'left-0'} flex items-center gap-0.5 rounded-lg z-10`}
+      style={{ 
+        padding: '4px',
+        background: 'var(--color-graphite)',
+        border: '1px solid var(--color-gold-hairline)',
+        boxShadow: 'var(--shadow-actions)',
+        animation: 'fadeIn 0.12s ease-out' 
+      }}
     >
       {/* Copy */}
       <button
         onClick={handleCopy}
-        className="w-7 h-7 rounded-md flex items-center justify-center text-[#94A3B8] hover:text-[#F9FAFB] hover:bg-[#334155]/50 transition-colors"
+        className="rounded-md flex items-center justify-center transition-all duration-150"
+        style={{
+          width: '44px',
+          height: '44px',
+          minWidth: '44px',
+          minHeight: '44px',
+          color: 'var(--color-text-muted)'
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.color = 'var(--color-champagne)';
+          e.currentTarget.style.background = 'var(--color-graphite-2)';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.color = 'var(--color-text-muted)';
+          e.currentTarget.style.background = 'transparent';
+        }}
         aria-label="Copy message"
         title={copied ? 'Copied!' : 'Copy'}
       >
         {copied ? (
-          <svg className="w-3.5 h-3.5 text-[#22C55E]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+          <svg className="w-3.5 h-3.5" style={{ color: 'var(--color-verdigris-patina)' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
             <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
           </svg>
         ) : (
@@ -43,7 +64,22 @@ export default function MessageActions({ isUser, messageText }: MessageActionsPr
 
       {/* Reply */}
       <button
-        className="w-7 h-7 rounded-md flex items-center justify-center text-[#94A3B8] hover:text-[#F9FAFB] hover:bg-[#334155]/50 transition-colors"
+        className="rounded-md flex items-center justify-center transition-all duration-150"
+        style={{
+          width: '44px',
+          height: '44px',
+          minWidth: '44px',
+          minHeight: '44px',
+          color: 'var(--color-text-muted)'
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.color = 'var(--color-champagne)';
+          e.currentTarget.style.background = 'var(--color-graphite-2)';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.color = 'var(--color-text-muted)';
+          e.currentTarget.style.background = 'transparent';
+        }}
         aria-label="Reply"
         title="Reply"
       >
@@ -54,7 +90,22 @@ export default function MessageActions({ isUser, messageText }: MessageActionsPr
 
       {/* React */}
       <button
-        className="w-7 h-7 rounded-md flex items-center justify-center text-[#94A3B8] hover:text-[#F9FAFB] hover:bg-[#334155]/50 transition-colors"
+        className="rounded-md flex items-center justify-center transition-all duration-150"
+        style={{
+          width: '44px',
+          height: '44px',
+          minWidth: '44px',
+          minHeight: '44px',
+          color: 'var(--color-text-muted)'
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.color = 'var(--color-champagne)';
+          e.currentTarget.style.background = 'var(--color-graphite-2)';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.color = 'var(--color-text-muted)';
+          e.currentTarget.style.background = 'transparent';
+        }}
         aria-label="Add reaction"
         title="React"
       >

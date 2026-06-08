@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { chatApi } from '../services/chatApi';
 import { generateId } from '../utils';
+import { subscribeToPush } from '../services/pushNotifications';
 import type { ErrorEventData, Message } from '../types';
 
 const SESSION_KEY = 'spur_session_id';
@@ -208,12 +209,23 @@ export function useChat() {
     setIsLoadingHistory(false);
   }, []);
 
+  // Subscribe to push notifications after first message exchange
+  useEffect(() => {
+    const sessionId = sessionIdRef.current;
+    if (sessionId && messages.length >= 2) {
+      subscribeToPush(sessionId).catch((err) =>
+        console.error('Push subscription failed:', err)
+      );
+    }
+  }, [messages.length]);
+
   return {
     messages,
     isStreaming,
     isLoadingHistory,
     isBusy: isStreaming || isLoadingHistory,
     error,
+    sessionId: sessionIdRef.current,
     sendMessage,
     clearError,
     startNewConversation,

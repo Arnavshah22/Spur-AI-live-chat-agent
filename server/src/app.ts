@@ -4,12 +4,14 @@ import cors from 'cors';
 import { env } from './config/env.js';
 import { requestLogger } from './middleware/requestLogger.js';
 import { errorHandler } from './middleware/errorHandler.js';
+import { logger } from './config/logger.js';
 import type { Router } from 'express';
 
 export type ReadinessCheck = () => Promise<void>;
 
 export function createApp(
   chatRouter: Router,
+  pushRouter: Router,
   readinessCheck?: ReadinessCheck
 ): express.Application {
   const app = express();
@@ -36,6 +38,7 @@ export function createApp(
   // ── Routes
   app.use('/api/chat', chatRouter);
   app.use('/chat', chatRouter);
+  app.use('/api/push', pushRouter);
 
   app.get('/api/health', (_req, res) => {
     res.json({ status: 'ok', timestamp: new Date().toISOString() });
@@ -51,6 +54,18 @@ export function createApp(
         message: 'Database connection unavailable',
         timestamp: new Date().toISOString(),
       });
+    }
+  });
+
+  // Internal endpoint for cron job to process stale conversations
+  app.post('/api/internal/process-followups', async (_req, res) => {
+    try {
+      const { followUpService } = await import('./services/followup/followup.service.js');
+      const result = await followUpService.processStaleConversations();
+      res.json({ status: 'ok', ...result });
+    } catch (error) {
+      logger.error({ error }, 'Failed to process follow-ups');
+      res.status(500).json({ status: 'error', message: 'Internal error' });
     }
   });
 

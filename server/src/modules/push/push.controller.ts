@@ -1,7 +1,7 @@
 import type { Request, Response, NextFunction } from 'express';
-import { pushNotificationService } from '../../services/push/push.service';
-import type { PushSubscriptionInput } from './push.schema';
-import { logger } from '../../config/logger';
+import { pushNotificationService } from '../../services/push/push.service.js';
+import type { PushSubscriptionInput } from './push.schema.js';
+import { logger } from '../../config/logger.js';
 
 class PushController {
   /**

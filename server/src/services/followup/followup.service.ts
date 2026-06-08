@@ -1,6 +1,6 @@
-import { prisma } from '../../config/database';
-import { logger } from '../../config/logger';
-import { pushNotificationService } from '../push/push.service';
+import { prisma } from '../../config/database.js';
+import { logger } from '../../config/logger.js';
+import { pushNotificationService } from '../push/push.service.js';
 
 /**
  * Follow-up Service

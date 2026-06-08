@@ -1,10 +1,21 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { chatApi } from '../services/chatApi';
 import { generateId } from '../utils';
-import { subscribeToPush } from '../services/pushNotifications';
+import {
+  isPushNotificationSupported,
+  subscribeToPush,
+} from '../services/pushNotifications';
 import type { ErrorEventData, Message } from '../types';
 
 const SESSION_KEY = 'spur_session_id';
+
+export type NotificationStatus =
+  | 'unsupported'
+  | 'idle'
+  | 'enabling'
+  | 'enabled'
+  | 'denied'
+  | 'error';
 
 function isAbortError(error: unknown): boolean {
   return error instanceof DOMException && error.name === 'AbortError';
@@ -15,6 +26,11 @@ export function useChat() {
   const [isStreaming, setIsStreaming] = useState(false);
   const [isLoadingHistory, setIsLoadingHistory] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [notificationStatus, setNotificationStatus] =
+    useState<NotificationStatus>(() => {
+      if (!isPushNotificationSupported()) return 'unsupported';
+      return Notification.permission === 'denied' ? 'denied' : 'idle';
+    });
   const sessionIdRef = useRef<string | null>(localStorage.getItem(SESSION_KEY));
   const messageAbortControllerRef = useRef<AbortController | null>(null);
   const historyAbortControllerRef = useRef<AbortController | null>(null);
@@ -195,6 +211,29 @@ export function useChat() {
 
   const clearError = useCallback(() => setError(null), []);
 
+  const enableNotifications = useCallback(async () => {
+    const sessionId = sessionIdRef.current;
+    if (!sessionId || notificationStatus === 'enabling') return false;
+
+    if (!isPushNotificationSupported()) {
+      setNotificationStatus('unsupported');
+      return false;
+    }
+
+    setNotificationStatus('enabling');
+    const isSubscribed = await subscribeToPush(sessionId);
+
+    if (isSubscribed) {
+      setNotificationStatus('enabled');
+      return true;
+    }
+
+    setNotificationStatus(
+      Notification.permission === 'denied' ? 'denied' : 'error'
+    );
+    return false;
+  }, [notificationStatus]);
+
   const startNewConversation = useCallback(() => {
     conversationVersionRef.current += 1;
     messageAbortControllerRef.current?.abort();
@@ -207,17 +246,10 @@ export function useChat() {
     setError(null);
     setIsStreaming(false);
     setIsLoadingHistory(false);
+    setNotificationStatus((current) =>
+      current === 'unsupported' || current === 'denied' ? current : 'idle'
+    );
   }, []);
-
-  // Subscribe to push notifications after first message exchange
-  useEffect(() => {
-    const sessionId = sessionIdRef.current;
-    if (sessionId && messages.length >= 2) {
-      subscribeToPush(sessionId).catch((err) =>
-        console.error('Push subscription failed:', err)
-      );
-    }
-  }, [messages.length]);
 
   return {
     messages,
@@ -229,5 +261,7 @@ export function useChat() {
     sendMessage,
     clearError,
     startNewConversation,
+    enableNotifications,
+    notificationStatus,
   };
 }

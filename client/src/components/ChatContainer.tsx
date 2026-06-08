@@ -4,6 +4,7 @@ import MessageList from './MessageList';
 import ChatInput from './ChatInput';
 import QuickReplies from './QuickReplies';
 import ErrorBanner from './ErrorBanner';
+import NotificationPrompt from './NotificationPrompt';
 
 const QUICK_SUGGESTIONS = [
   "What's your return policy?",
@@ -22,6 +23,8 @@ export default function ChatContainer() {
     sendMessage,
     clearError,
     startNewConversation,
+    enableNotifications,
+    notificationStatus,
   } = useChat();
 
   const lastMessage = messages[messages.length - 1];
@@ -30,6 +33,8 @@ export default function ChatContainer() {
     !isStreaming &&
     lastMessage?.sender === 'ai' &&
     !lastMessage?.isError;
+  const showNotificationPrompt =
+    messages.length >= 2 && !isLoadingHistory && notificationStatus !== 'enabled';
 
   return (
     <div className="chat-app">
@@ -50,6 +55,13 @@ export default function ChatContainer() {
         </div>
 
         <div className="chat-footer flex min-w-0 w-full max-w-full flex-shrink-0 flex-col overflow-x-hidden">
+          {showNotificationPrompt && (
+            <NotificationPrompt
+              status={notificationStatus}
+              disabled={isBusy}
+              onEnable={enableNotifications}
+            />
+          )}
           {showQuickReplies && (
             <QuickReplies
               suggestions={QUICK_SUGGESTIONS}

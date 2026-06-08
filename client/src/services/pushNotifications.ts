@@ -1,7 +1,15 @@
 const API_BASE =
   import.meta.env.VITE_API_BASE_URL?.replace('/chat', '') ||
   'http://localhost:3001/api';
-  console.log(API_BASE);
+
+export function isPushNotificationSupported(): boolean {
+  return (
+    'Notification' in window &&
+    'serviceWorker' in navigator &&
+    'PushManager' in window
+  );
+}
+
 function urlBase64ToUint8Array(base64String: string): Uint8Array<ArrayBuffer> {
   const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
   const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
@@ -33,6 +41,11 @@ export async function subscribeToPush(
   conversationId: string
 ): Promise<boolean> {
   try {
+    if (!isPushNotificationSupported()) {
+      console.log('Push notifications not supported');
+      return false;
+    }
+
     // Check permission
     const permission = await Notification.requestPermission();
     if (permission !== 'granted') {
@@ -53,10 +66,12 @@ export async function subscribeToPush(
     const { publicKey } = await keyResponse.json();
 
     // Subscribe to push
-    const subscription = await registration.pushManager.subscribe({
-      userVisibleOnly: true,
-      applicationServerKey: urlBase64ToUint8Array(publicKey),
-    });
+    const subscription =
+      (await registration.pushManager.getSubscription()) ||
+      (await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(publicKey),
+      }));
 
     // Send subscription to server
     const subscribeResponse = await fetch(`${API_BASE}/push/subscribe`, {
@@ -72,7 +87,7 @@ export async function subscribeToPush(
       throw new Error('Failed to subscribe to push notifications');
     }
 
-    console.log('✅ Subscribed to push notifications');
+    console.log('Subscribed to push notifications');
     return true;
   } catch (error) {
     console.error('Push subscription failed:', error);

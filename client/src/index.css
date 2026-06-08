@@ -210,6 +210,106 @@ body {
 
 /* ─── Quick replies ─── */
 
+/* Notification opt-in */
+
+.notification-prompt {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.625rem;
+  border: 1px solid var(--color-gold-hairline);
+  border-radius: 8px;
+  background: var(--color-raised-lacquer);
+}
+
+.notification-prompt__icon {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 8px;
+  color: var(--color-lacquer-deep);
+  background: var(--color-kinpaku-gold);
+}
+
+.notification-prompt__copy {
+  display: flex;
+  min-width: 0;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.notification-prompt__title,
+.notification-prompt__body {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.notification-prompt__title {
+  font-size: 0.86rem;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--color-champagne);
+}
+
+.notification-prompt__body {
+  font-size: 0.76rem;
+  line-height: 1.25;
+  color: var(--color-text-muted);
+}
+
+.notification-prompt__button {
+  flex: 0 0 auto;
+  min-width: 4.75rem;
+  min-height: 2.5rem;
+  padding: 0 0.875rem;
+  border: none;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--color-lacquer-deep);
+  background: var(--color-patina-pale);
+  cursor: pointer;
+  transition: background-color 0.2s ease, opacity 0.2s ease;
+}
+
+.notification-prompt__button:hover:not(:disabled) {
+  background: var(--color-verdigris-patina);
+}
+
+.notification-prompt__button:disabled {
+  cursor: not-allowed;
+  opacity: 0.56;
+}
+
+@media (max-width: 359px) {
+  .notification-prompt {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .notification-prompt__button {
+    width: 100%;
+  }
+}
+
+@media (max-height: 620px) {
+  .notification-prompt {
+    padding: 0.5rem;
+  }
+
+  .notification-prompt__body {
+    display: none;
+  }
+}
+
 .quick-replies {
   padding-top: 0.625rem;
   padding-bottom: 0.25rem;

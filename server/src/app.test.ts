@@ -6,9 +6,11 @@ import { createApp } from './app.js';
 
 async function withServer(run: (baseUrl: string) => Promise<void>) {
   const router = Router();
+  const pushRouter = Router();
   router.post('/message', (_req, res) => res.json({ status: 'ok' }));
+  pushRouter.get('/vapid-public-key', (_req, res) => res.json({ status: 'ok' }));
 
-  const server = createApp(router).listen(0);
+  const server = createApp(router, pushRouter).listen(0);
   await once(server, 'listening');
   const { port } = server.address() as AddressInfo;
 

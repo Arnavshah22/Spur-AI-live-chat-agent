@@ -14,6 +14,9 @@ function createConversation(): Conversation {
     id: '11111111-1111-4111-8111-111111111111',
     channel: 'web',
     metadata: null,
+    lastActivityAt: now,
+    followUpSentAt: null,
+    isActive: true,
     createdAt: now,
     updatedAt: now,
   };

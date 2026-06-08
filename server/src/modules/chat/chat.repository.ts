@@ -47,7 +47,10 @@ export class ChatRepository {
       }),
       this.prisma.conversation.update({
         where: { id: conversationId },
-        data: { updatedAt: new Date() },
+        data: {
+          lastActivityAt: new Date(),
+          followUpSentAt: null,
+        },
       }),
     ]);
 

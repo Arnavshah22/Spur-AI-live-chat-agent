@@ -92,8 +92,16 @@ MAX_HISTORY_MESSAGES=10                # Number of previous messages sent to LLM
 MAX_TOKENS=500                         # Maximum tokens for LLM response
 LLM_TIMEOUT_MS=30000                   # LLM request timeout in milliseconds
 CORS_ORIGIN=http://localhost:5173     # Frontend URL for CORS
-REDIS_URL=redis://localhost:6379      # Redis URL for caching (optional — app works without it)
+
+# Redis Cache (Optional - improves performance by caching LLM responses)
+REDIS_URL=redis://localhost:6379      # For local: redis://localhost:6379 (Docker)
+                                       # For production: rediss://...upstash.io:6379 (Upstash)
 REDIS_CACHE_TTL=86400                 # Cache TTL in seconds (default: 24 hours)
+
+# Push Notifications (Optional - enables follow-up notifications)
+VAPID_PUBLIC_KEY=your_vapid_public_key_here     # Generate with: npx web-push generate-vapid-keys
+VAPID_PRIVATE_KEY=your_vapid_private_key_here   # Keep this secret!
+VAPID_SUBJECT=mailto:your-email@example.com      # Contact email for push notifications
 ```
 
 For the frontend (optional), create `client/.env`:
@@ -164,8 +172,9 @@ Navigate to `http://localhost:5173` in your browser and start chatting!
 | **Frontend** | React 19, TypeScript, Vite, Tailwind CSS |
 | **Backend** | Node.js, Express, TypeScript |
 | **Database** | PostgreSQL, Prisma ORM |
-| **Cache** | Redis (ioredis) — optional, graceful degradation |
+| **Cache** | Redis (ioredis) with TLS support — optional, graceful degradation |
 | **LLM** | OpenAI SDK (configured for Groq/Llama 3.3 70B) |
+| **Push Notifications** | Web Push API (VAPID), Service Workers, PWA |
 | **Validation** | Zod |
 | **Logging** | Pino |
 | **Testing** | Vitest |
@@ -179,10 +188,13 @@ src/
 ├── config/              # Environment variables, logging configuration
 ├── middleware/          # Express middleware (error handling, validation, request logging)
 ├── modules/
-│   └── chat/            # Chat module (routes, controllers, services, repository, schemas)
+│   ├── chat/            # Chat module (routes, controllers, services, repository, schemas)
+│   └── push/            # Push notification module (routes, controllers, subscriptions)
 ├── services/
-│   ├── cache/           # Redis cache service (graceful degradation)
-│   └── llm/             # LLM integration (OpenAI service, prompts, retry logic)
+│   ├── cache/           # Redis cache service (graceful degradation, TLS support)
+│   ├── llm/             # LLM integration (OpenAI service, prompts, retry logic)
+│   ├── push/            # Push notification service (VAPID, web-push)
+│   └── followup/        # Stale conversation detection and auto follow-ups
 ├── types/               # Shared TypeScript types and custom error classes
 └── server.ts            # Application entry point
 ```
@@ -232,7 +244,11 @@ PostgreSQL    Redis
 
 6. **Retry with exponential backoff**: Transient LLM errors (timeouts, rate limits) are retried with exponential backoff and jitter to improve reliability.
 
-7. **Redis caching with graceful degradation**: LLM responses are cached in Redis using a SHA-256 hash of the conversation context as the key. Cache hits return instantly without an LLM API call. If Redis is unavailable, the app continues to function normally without caching — no data is ever lost.
+7. **Redis caching with graceful degradation**: LLM responses are cached in Redis using a SHA-256 hash of the conversation context as the key. Cache hits return instantly without an LLM API call. If Redis is unavailable, the app continues to function normally without caching — no data is ever lost. Supports both local Redis and cloud providers (Upstash) with TLS.
+
+8. **Push notifications for stale conversations**: Users can opt-in to receive push notifications when their conversation goes inactive for 30+ minutes. Uses Web Push API with VAPID authentication. Works on Android Chrome directly and iOS 16.4+ via PWA (add to home screen). Notifications are triggered by a cron job that periodically checks for stale conversations.
+
+9. **Progressive Web App (PWA)**: The frontend includes a service worker and manifest.json, enabling installation on mobile devices and push notification support on iOS (when installed as PWA).
 
 ---
 
@@ -412,6 +428,69 @@ Readiness check (verifies database connection).
 
 ---
 
+### Push Notification Endpoints
+
+### `GET /api/push/vapid-public-key`
+
+Get the VAPID public key for push notification subscriptions.
+
+**Response:**
+
+```json
+{
+  "publicKey": "BMAWwv2vZh2nwWSD39ttLswzbu8lUIKX2iUJ..."
+}
+```
+
+### `POST /api/push/subscribe`
+
+Subscribe a user to push notifications.
+
+**Request:**
+
+```json
+{
+  "sessionId": "uuid",
+  "subscription": {
+    "endpoint": "https://...",
+    "keys": {
+      "p256dh": "...",
+      "auth": "..."
+    }
+  }
+}
+```
+
+**Response:**
+
+```json
+{
+  "status": "ok",
+  "message": "Subscribed successfully"
+}
+```
+
+### `POST /api/internal/process-followups`
+
+Internal endpoint for cron job to process stale conversations and send follow-up notifications. Should be called every 5 minutes by an external cron service (e.g., cron-job.org).
+
+**Response:**
+
+```json
+{
+  "status": "ok",
+  "processed": 5,
+  "sent": 3,
+  "failed": 0
+}
+```
+
+- `processed`: Number of stale conversations detected
+- `sent`: Number of push notifications sent successfully
+- `failed`: Number of failed notification attempts
+
+---
+
 ## Testing & Verification
 
 Run type checking, tests, and build for both frontend and backend:
@@ -487,16 +566,21 @@ This app is ready to deploy to platforms like **Render**, **Railway**, **Fly.io*
 1. Set environment variables:
    - `NODE_ENV=production`
    - `DATABASE_URL` (managed PostgreSQL connection string)
-   - `OPENAI_API_KEY`
+   - `OPENAI_API_KEY` (Groq or OpenAI API key)
+   - `OPENAI_BASE_URL=https://api.groq.com/openai/v1` (for Groq)
+   - `OPENAI_MODEL=llama-3.3-70b-versatile` (for Groq)
    - `CORS_ORIGIN` (your frontend URL)
-   - `REDIS_URL` (managed Redis connection string, optional)
-   - Optional: `OPENAI_MODEL`, `MAX_MESSAGE_LENGTH`, `MAX_TOKENS`, `REDIS_CACHE_TTL`, etc.
+   - `REDIS_URL` (managed Redis connection string with TLS, e.g., `rediss://...upstash.io:6379`)
+   - `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT` (for push notifications)
+   - Optional: `MAX_MESSAGE_LENGTH`, `MAX_TOKENS`, `REDIS_CACHE_TTL`, etc.
 
 2. Run database migrations: `npm run db:deploy`
 
 3. Build the backend: `npm run build`
 
 4. Start the server: `npm start`
+
+5. **(Optional) Set up cron job for push notifications**: Configure an external cron service (e.g., cron-job.org) to call `POST /api/internal/process-followups` every 5 minutes. See `CRON_JOB_SETUP.md` for detailed instructions.
 
 ### Frontend Deployment Checklist
 
@@ -520,8 +604,10 @@ This app is ready to deploy to platforms like **Render**, **Railway**, **Fly.io*
 - Add **rate limiting** at the API gateway or load balancer level
 - Enable **request logging and monitoring** (Datadog, Sentry, LogRocket)
 - Set up **alerts** for LLM errors, high latency, or database connection issues
-- Use a **managed Redis** service (Upstash, Redis Cloud, AWS ElastiCache) for production caching
-- Monitor **OpenAI API costs** and set up usage alerts
+- Use a **managed Redis** service (Upstash, Redis Cloud, AWS ElastiCache) for production caching with TLS enabled
+- Monitor **OpenAI/Groq API costs** and set up usage alerts
+- **Push notifications**: Set up a cron job (cron-job.org, GitHub Actions, etc.) to call `/api/internal/process-followups` every 5 minutes
+- **VAPID keys**: Keep `VAPID_PRIVATE_KEY` secret and never commit to version control
 
 ---
 
@@ -530,10 +616,13 @@ This app is ready to deploy to platforms like **Render**, **Railway**, **Fly.io*
 ```
 take/
 ├── client/                    # React frontend
+│   ├── public/
+│   │   ├── manifest.json      # PWA manifest
+│   │   └── sw.js              # Service worker for push notifications
 │   ├── src/
-│   │   ├── components/        # React components (ChatContainer, MessageBubble, etc.)
+│   │   ├── components/        # React components (ChatContainer, MessageBubble, NotificationPrompt, etc.)
 │   │   ├── hooks/             # Custom hooks (useChat, useAutoScroll)
-│   │   ├── services/          # API client (chatApi.ts)
+│   │   ├── services/          # API client (chatApi.ts, pushNotifications.ts)
 │   │   ├── types/             # TypeScript types
 │   │   └── utils/             # Utility functions
 │   ├── package.json
@@ -542,21 +631,25 @@ take/
 ├── server/                    # Node.js backend
 │   ├── prisma/
 │   │   ├── migrations/        # Database migrations
-│   │   └── schema.prisma      # Prisma schema
+│   │   └── schema.prisma      # Prisma schema (conversations, messages, push_subscriptions)
 │   ├── src/
 │   │   ├── config/            # Env config, logger
 │   │   ├── middleware/        # Express middleware
 │   │   ├── modules/
-│   │   │   └── chat/          # Chat module (routes, controller, service, repository)
+│   │   │   ├── chat/          # Chat module (routes, controller, service, repository)
+│   │   │   └── push/          # Push notification module (routes, controller)
 │   │   ├── services/
-│   │   │   ├── cache/         # Redis cache service
-│   │   │   └── llm/           # LLM service, prompts, retry logic
+│   │   │   ├── cache/         # Redis cache service (TLS support)
+│   │   │   ├── llm/           # LLM service, prompts, retry logic
+│   │   │   ├── push/          # Push notification service (VAPID, web-push)
+│   │   │   └── followup/      # Stale conversation detection
 │   │   ├── types/             # Shared types, custom errors
 │   │   └── server.ts          # Entry point
 │   ├── package.json
 │   └── tsconfig.json
 │
 ├── docker-compose.yml         # PostgreSQL + Redis containers
+├── CRON_JOB_SETUP.md         # Detailed guide for setting up push notification cron job
 └── README.md                  # This file
 ```
 

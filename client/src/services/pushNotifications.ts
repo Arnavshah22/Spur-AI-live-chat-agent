@@ -94,3 +94,22 @@ export async function subscribeToPush(
     return false;
   }
 }
+
+/**
+ * Check if user has an active push subscription
+ */
+export async function hasActiveSubscription(): Promise<boolean> {
+  try {
+    if (!isPushNotificationSupported()) return false;
+    if (Notification.permission !== 'granted') return false;
+
+    const registration = await navigator.serviceWorker.getRegistration();
+    if (!registration) return false;
+
+    const subscription = await registration.pushManager.getSubscription();
+    return subscription !== null;
+  } catch (error) {
+    console.error('Failed to check subscription status:', error);
+    return false;
+  }
+}

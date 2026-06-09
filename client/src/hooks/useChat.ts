@@ -4,6 +4,7 @@ import { generateId } from '../utils';
 import {
   isPushNotificationSupported,
   subscribeToPush,
+  hasActiveSubscription,
 } from '../services/pushNotifications';
 import type { ErrorEventData, Message } from '../types';
 
@@ -39,6 +40,40 @@ export function useChat() {
   const storeSessionId = useCallback((sessionId: string) => {
     sessionIdRef.current = sessionId;
     localStorage.setItem(SESSION_KEY, sessionId);
+  }, []);
+
+  // Check for existing push subscription on mount
+  useEffect(() => {
+    if (!isPushNotificationSupported()) return;
+    
+    const checkSubscriptionStatus = async () => {
+      const isSubscribed = await hasActiveSubscription();
+      
+      if (isSubscribed && Notification.permission === 'granted') {
+        setNotificationStatus('enabled');
+      } else if (Notification.permission === 'denied') {
+        setNotificationStatus('denied');
+      } else if (!isSubscribed && Notification.permission === 'granted') {
+        // Permission granted but no subscription - show prompt
+        setNotificationStatus('idle');
+      }
+    };
+
+    // Check immediately on mount
+    checkSubscriptionStatus();
+
+    // Recheck when app becomes visible (user returns to app)
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        checkSubscriptionStatus();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
   }, []);
 
   useEffect(() => {
